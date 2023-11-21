@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Memória</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: pink;
+    }
+
+    .memory-card {
+      width: 100px;
+      height: 100px;
+      background-color: #ddd;
+      margin: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.5s;
+    }
+
+    .memory-game {
+      display: flex;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+<div class="memory-game" id="memory-game"></div>
+
+
+<script>
+  // Frases para as cartas
+  const phrases = [
+    "Eu te amo",
+    "Você é incrível",
+    "Eu te amo muito",
+    "GOSTOSAAA",
+    "Perfeita",
+    "<3",
+    "Linda",
+    "Você é especial",
+    "ja disse que vc é gostosa?",
+    "21/04/2022"
+  ];
+
+  // Duplica as frases para criar os pares
+  const cards = [...phrases, ...phrases];
+
+  // Embaralha as cartas
+  cards.sort(() => Math.random() - 0.5);
+
+  const memoryGameElement = document.getElementById('memory-game');
+
+  cards.forEach((phrase, index) => {
+    const cardElement = document.createElement('div');
+    cardElement.classList.add('memory-card');
+    cardElement.textContent = '?'; // Inicialmente, todas as cartas têm um ponto de interrogação
+
+    cardElement.addEventListener('click', () => flipCard(cardElement, phrase));
+
+    memoryGameElement.appendChild(cardElement);
+  });
+
+  let hasFlippedCard = false;
+  let lockBoard = false;
+  let firstCard, secondCard;
+
+  function flipCard(card, phrase) {
+    if (lockBoard) return;
+    if (card === firstCard) return;
+
+    card.textContent = phrase;
+
+    if (!hasFlippedCard) {
+      hasFlippedCard = true;
+      firstCard = card;
+    } else {
+      hasFlippedCard = false;
+      secondCard = card;
+      checkForMatch();
+    }
+  }
+
+  function checkForMatch() {
+    if (firstCard.textContent === secondCard.textContent) {
+      disableCards();
+    } else {
+      unflipCards();
+    }
+  }
+
+  function disableCards() {
+    firstCard.removeEventListener('click', () => flipCard(firstCard));
+    secondCard.removeEventListener('click', () => flipCard(secondCard));
+  }
+
+  function unflipCards() {
+    lockBoard = true;
+
+    setTimeout(() => {
+      firstCard.textContent = '?';
+      secondCard.textContent = '?';
+
+      lockBoard = false;
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>
